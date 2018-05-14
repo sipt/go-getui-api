@@ -10,7 +10,9 @@ type Apns struct {
 }
 
 func GetApns() *Apns {
-	apns := &Apns{}
+	apns := &Apns{
+		Sound: "default",
+	}
 	return apns
 }
 
