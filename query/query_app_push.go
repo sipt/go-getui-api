@@ -1,8 +1,8 @@
 package query
 
 import (
-	util "GetuiDemo/getui/util"
-	"encoding/json"
+	"github.com/sipt/go-getui-api/util"
+	"github.com/sipt/go-getui-api/entity"
 )
 
 type QueryAppPushResult struct {
@@ -17,19 +17,11 @@ type QueryAppPushResult struct {
 	ClickCount      int64  `json:"clickCount"`      //点击数
 }
 
-func QueryAppPush(appId string, auth_token string, timeStr string) (*QueryAppPushResult, error) {
+func QueryAppPush(conf entity.IAppConfig, timeStr string) (*QueryAppPushResult, error) {
+	url := util.TOKEN_DOMAIN + conf.GetAppID() + "/query_app_push/" + timeStr //20160404
 
-	url := util.TOKEN_DOMAIN + appId + "/query_app_push/" + timeStr //20160404
+	reply := new(QueryAppPushResult)
+	err := util.Get(url, conf.GetToken(), reply)
 
-	result, err := util.Get(url, auth_token)
-	if err != nil {
-		return nil, err
-	}
-
-	queryAppPushResult := new(QueryAppPushResult)
-	if err := json.Unmarshal([]byte(result), &queryAppPushResult); err != nil {
-		return nil, err
-	}
-
-	return queryAppPushResult, err
+	return reply, err
 }

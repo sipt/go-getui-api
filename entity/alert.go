@@ -1,4 +1,4 @@
-package tool
+package entity
 
 type Alert struct {
 	Title string `json:"title"` //通知标题

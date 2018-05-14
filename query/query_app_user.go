@@ -1,8 +1,8 @@
 package query
 
 import (
-	util "GetuiDemo/getui/util"
-	"encoding/json"
+	"github.com/sipt/go-getui-api/util"
+	"github.com/sipt/go-getui-api/entity"
 )
 
 type QueryAppUserResult struct {
@@ -16,19 +16,11 @@ type QueryAppUserResult struct {
 	OnlineCount      int64  `json:"onlineCount"`      //在线用户数使用方法
 }
 
-func QueryAppUser(appId string, auth_token string, timeStr string) (*QueryAppUserResult, error) {
+func QueryAppUser(conf entity.IAppConfig, timeStr string) (*QueryAppUserResult, error) {
+	url := util.TOKEN_DOMAIN + conf.GetAppID() + "/query_app_user/" + timeStr //20160404
 
-	url := util.TOKEN_DOMAIN + appId + "/query_app_user/" + timeStr //20160404
+	reply := new(QueryAppUserResult)
+	err := util.Get(url, conf.GetToken(), reply)
 
-	result, err := util.Get(url, auth_token)
-	if err != nil {
-		return nil, err
-	}
-
-	queryAppUserResult := new(QueryAppUserResult)
-	if err := json.Unmarshal([]byte(result), &queryAppUserResult); err != nil {
-		return nil, err
-	}
-
-	return queryAppUserResult, err
+	return reply, err
 }

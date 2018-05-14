@@ -1,4 +1,4 @@
-package getui
+package util
 
 const (
 	CHARSET                    = "UTF-8"

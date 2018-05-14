@@ -1,4 +1,4 @@
-package tool
+package entity
 
 //open application templates
 type Apns struct {

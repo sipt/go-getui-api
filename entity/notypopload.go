@@ -1,4 +1,4 @@
-package tool
+package entity
 
 //点开通知弹窗下载模板
 type NotyPopload struct {

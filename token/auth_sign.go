@@ -1,15 +1,14 @@
 package token
 
 import (
-	util "GetuiDemo/getui/util"
+	"github.com/sipt/go-getui-api/util"
 	"crypto/sha256"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
 )
 
-type Parmar struct {
+type Param struct {
 	Sign      string `json:"sign"`
 	Timestamp string `json:"timestamp"`
 	AppKey    string `json:"appkey"`
@@ -22,41 +21,27 @@ type TokenResult struct {
 
 func GetAuthSign(appId string, appKey string, masterSecret string) (*TokenResult, error) {
 
-	bodyByte, err := GetPostBody(appKey, masterSecret)
+	param, err := GetPostBody(appKey, masterSecret)
 	if err != nil {
 		return nil, err
 	}
 
 	url := util.TOKEN_DOMAIN + appId + "/auth_sign"
-	result, err := util.BytePost(url, "", bodyByte)
-	if err != nil {
-		return nil, err
-	}
+	reply := new(TokenResult)
+	err = util.Post(url, "", param, &reply)
 
-	tokenResult := new(TokenResult)
-	if err := json.Unmarshal([]byte(result), &tokenResult); err != nil {
-		return nil, err
-	}
-
-	return tokenResult, err
+	return reply, err
 }
 
-func GetPostBody(appKey string, masterSecret string) ([]byte, error) {
+func GetPostBody(appKey string, masterSecret string) (*Param, error) {
 
 	signStr, timestamp := HmacSha256(appKey, masterSecret)
 
-	parmar := &Parmar{
+	return &Param{
 		Sign:      signStr,
 		Timestamp: timestamp,
 		AppKey:    appKey,
-	}
-
-	body, err := json.Marshal(parmar)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
+	}, nil
 }
 
 func HmacSha256(appKey string, masterSecret string) (string, string) {

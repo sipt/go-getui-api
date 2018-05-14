@@ -1,4 +1,4 @@
-package tool
+package entity
 
 type MultiMedia struct {
 	Url      string `json:"url"`       //多媒体资源地址

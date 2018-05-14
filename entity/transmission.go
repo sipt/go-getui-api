@@ -1,4 +1,4 @@
-package tool
+package entity
 
 //传递消息内容给客户端，客户端自行定义通知栏展现形式
 type Transmission struct {

@@ -1,8 +1,8 @@
 package query
 
 import (
-	util "GetuiDemo/getui/util"
-	"encoding/json"
+	"github.com/sipt/go-getui-api/util"
+	"github.com/sipt/go-getui-api/entity"
 )
 
 type PushRESResult struct {
@@ -20,27 +20,15 @@ type Data struct {
 	APN        interface{} `json:"APN"`        //iOS推送结果数据，详细字段参考GT
 }
 
-type PushRESParmar struct {
+type PushRESParam struct {
 	TaskIdList []string `json:"taskIdList"` //查询的任务尖列表
 }
 
-func PushResult(appId string, auth_token string, parmar *PushRESParmar) (*PushRESResult, error) {
+func PushResult(conf entity.IAppConfig, param *PushRESParam) (*PushRESResult, error) {
+	url := util.TOKEN_DOMAIN + conf.GetAppID() + "/push_result"
 
-	url := util.TOKEN_DOMAIN + appId + "/push_result"
-	bodyByte, err := util.GetBody(parmar)
-	if err != nil {
-		return nil, err
-	}
+	reply := new(PushRESResult)
+	err := util.Post(url, conf.GetToken(), param, reply)
 
-	result, err := util.BytePost(url, auth_token, bodyByte)
-	if err != nil {
-		return nil, err
-	}
-
-	pushRESResult := new(PushRESResult)
-	if err := json.Unmarshal([]byte(result), &pushRESResult); err != nil {
-		return nil, err
-	}
-
-	return pushRESResult, err
+	return reply, err
 }

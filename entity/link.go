@@ -1,4 +1,4 @@
-package tool
+package entity
 
 //点开通知打开网页模板
 type Link struct {

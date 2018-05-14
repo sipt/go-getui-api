@@ -1,26 +1,19 @@
 package token
 
 import (
-	util "GetuiDemo/getui/util"
-	"encoding/json"
+	"github.com/sipt/go-getui-api/util"
 )
 
 type CloseTokenResult struct {
 	Result string `json:"result"`
 }
 
-func SetAuthClose(appId string, auth_token string) (*CloseTokenResult, error) {
+func SetAuthClose(appID, authToken string) (*CloseTokenResult, error) {
 
-	url := util.TOKEN_DOMAIN + appId + "/auth_close"
-	result, err := util.BytePost(url, auth_token, nil)
-	if err != nil {
-		return nil, err
-	}
+	url := util.TOKEN_DOMAIN + appID + "/auth_close"
 
-	closeTokenResult := new(CloseTokenResult)
-	if err := json.Unmarshal([]byte(result), &closeTokenResult); err != nil {
-		return nil, err
-	}
+	reply := new(CloseTokenResult)
+	err := util.Post(url, authToken, nil, reply)
 
-	return closeTokenResult, err
+	return reply, err
 }

@@ -1,4 +1,4 @@
-package tool
+package entity
 
 type Message struct {
 	AppKey            string `json:"appkey"`                        //	注册应用时生成的appkey

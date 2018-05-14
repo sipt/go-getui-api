@@ -1,4 +1,4 @@
-package tool
+package entity
 
 type Condition struct {
 	Key     string `json:"key"`      //筛选条件类型名称(省市region,手机类型phonetype,用户标签tag)

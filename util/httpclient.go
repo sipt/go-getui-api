@@ -1,4 +1,4 @@
-package getui
+package util
 
 import (
 	"bytes"
@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-func Get(url string, auth_token string) (string, error) {
+func Get(url, authToken string, reply interface{}) error {
 
 	req, err := http.NewRequest("GET", url, nil)
-	req.Header["authtoken"] = append(req.Header["authtoken"], auth_token)
+	req.Header["authtoken"] = append(req.Header["authtoken"], authToken)
 	req.Header.Add("Charset", CHARSET)
 	req.Header.Add("Content-Type", CONTENT_TYPE_JSON)
 
@@ -21,23 +21,32 @@ func Get(url string, auth_token string) (string, error) {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	result, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return string(result), nil
+	return json.Unmarshal([]byte(result), reply)
 }
 
-func BytePost(url string, auth_token string, bodyByte []byte) (string, error) {
-	body := bytes.NewBuffer(bodyByte)
+func Post(url, authToken string, body interface{}, reply interface{}) error {
+	var bodyByte []byte
+	var err error
+	if body != nil {
+		bodyByte, err = json.Marshal(body)
+		if err != nil {
+			return err
+		}
+	} else {
+		bodyByte = make([]byte, 0, 0)
+	}
 
-	req, err := http.NewRequest("POST", url, body)
-	req.Header["authtoken"] = append(req.Header["authtoken"], auth_token)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(bodyByte))
+	req.Header["authtoken"] = append(req.Header["authtoken"], authToken)
 	req.Header.Add("Charset", CHARSET)
 	req.Header.Add("Content-Type", CONTENT_TYPE_JSON)
 
@@ -46,45 +55,50 @@ func BytePost(url string, auth_token string, bodyByte []byte) (string, error) {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	result, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return "", err
+		return err
 	}
-
-	return string(result), nil
+	return json.Unmarshal(result, reply)
 }
 
-func Delete(url string, auth_token string, bodyByte []byte) (string, error) {
-
-	body := bytes.NewBuffer(bodyByte)
-
-	req, err := http.NewRequest("DELETE", url, body)
-	req.Header["authtoken"] = append(req.Header["authtoken"], auth_token)
+func Delete(url string, authToken string, body interface{}, reply interface{}) error {
+	var bodyByte []byte
+	var err error
+	if body != nil {
+		bodyByte, err = json.Marshal(body)
+		if err != nil {
+			return err
+		}
+	} else {
+		bodyByte = make([]byte, 0, 0)
+	}
+	req, err := http.NewRequest("DELETE", url, bytes.NewBuffer(bodyByte))
+	req.Header["authtoken"] = append(req.Header["authtoken"], authToken)
 	req.Header.Add("Charset", CHARSET)
 	req.Header.Add("Content-Type", CONTENT_TYPE_JSON)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	result, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return "", err
+		return err
 	}
-
-	return string(result), nil
+	return json.Unmarshal(result, reply)
 }
 
-func GetBody(parmar interface{}) ([]byte, error) {
+func GetBody(Param interface{}) ([]byte, error) {
 
-	body, err := json.Marshal(parmar)
+	body, err := json.Marshal(Param)
 	if err != nil {
 		return nil, err
 	}

@@ -1,8 +1,8 @@
 package query
 
 import (
-	util "GetuiDemo/getui/util"
-	"encoding/json"
+	"github.com/sipt/go-getui-api/util"
+	"github.com/sipt/go-getui-api/entity"
 )
 
 type UserStatusResult struct {
@@ -12,19 +12,11 @@ type UserStatusResult struct {
 	Status    string `json:"status"`    //用户状态 online在线 offline离线
 }
 
-func UserStatus(appId string, auth_token string, cid string) (*UserStatusResult, error) {
+func UserStatus(conf entity.IAppConfig, cid string) (*UserStatusResult, error) {
+	url := util.TOKEN_DOMAIN + conf.GetAppID() + "/user_status/" + cid
 
-	url := util.TOKEN_DOMAIN + appId + "/user_status/" + cid
-
-	result, err := util.Get(url, auth_token)
-	if err != nil {
-		return nil, err
-	}
-
-	userStatusResult := new(UserStatusResult)
-	if err := json.Unmarshal([]byte(result), &userStatusResult); err != nil {
-		return nil, err
-	}
-
-	return userStatusResult, err
+	reply := new(UserStatusResult)
+	err := util.Get(url, conf.GetToken(), reply)
+	
+	return reply, err
 }

@@ -1,15 +1,15 @@
 package main
 
 import (
-	push "GetuiDemo/getui/push"
-	query "GetuiDemo/getui/query"
-	style "GetuiDemo/getui/style"
-	token "GetuiDemo/getui/token"
-	tool "GetuiDemo/getui/tool"
+	"github.com/sipt/go-getui-api/push"
+	"github.com/sipt/go-getui-api/query"
+	"github.com/sipt/go-getui-api/style"
+	"github.com/sipt/go-getui-api/token"
 	"fmt"
 	"time"
 
 	log "github.com/inconshreveable/log15"
+	"github.com/sipt/go-getui-api/entity"
 )
 
 var (
@@ -22,33 +22,29 @@ var (
 
 func main() {
 
-	tokenStr, err := getGeTuiToken()
-	if err != nil {
-		log.Error(fmt.Sprintf("get getui sign token err : ", err))
-		return
-	}
+	conf := entity.NewAppConfig(appId, appSecret, appKey, masterSecret)
 
-	saveListBodyParmar := GetSaveListBodyParmar(appKey)
-	saveRes, err := SaveListBody(appId, tokenStr, saveListBodyParmar)
+	saveListBodyParam := GetSaveListBodyParam(appKey)
+	saveRes, err := SaveListBody(conf, saveListBodyParam)
 	if err != nil {
 		log.Error(fmt.Sprintf("save list body  err : ") + err.Error())
 		return
 	}
 
-	parmar := GetPushListParmar(saveRes.TaskId, []string{cid})
-	_, err = push.PushList(appId, tokenStr, parmar)
+	Param := GetPushListParam(saveRes.TaskId, []string{cid})
+	_, err = push.PushList(conf, Param)
 	if err != nil {
 		log.Error(fmt.Sprintf("save list body  err : ") + err.Error())
 		return
 	}
 
-	pushSingleResult, err := pushSingle(tokenStr)
+	pushSingleResult, err := pushSingle(conf)
 	if err != nil {
 		log.Error(fmt.Sprintf("get push single err : ", err))
 		return
 	}
 
-	_, err = getPushResult(tokenStr, pushSingleResult.TaskId)
+	_, err = getPushResult(conf, pushSingleResult.TaskId)
 	if err != nil {
 		log.Error(fmt.Sprintf("query push result err : ", err))
 		return
@@ -56,20 +52,20 @@ func main() {
 
 }
 
-func GetPushListParmar(taskId string, cids []string) *push.PushListParmar {
+func GetPushListParam(taskId string, cids []string) *push.PushListParam {
 
-	pushListParmar := &push.PushListParmar{
+	pushListParam := &push.PushListParam{
 		TaskId:     taskId,
 		Cid:        cids,
 		NeedDetail: true,
 	}
 
-	return pushListParmar
+	return pushListParam
 }
 
-func SaveListBody(appId string, auth_token string, parmar *push.SaveListBodyParmar) (*push.SaveListBodyResult, error) {
+func SaveListBody(conf entity.IAppConfig, Param *push.SaveListBodyParam) (*push.SaveListBodyResult, error) {
 
-	saveListBodyResult, err := push.SaveListBody(appId, auth_token, parmar)
+	saveListBodyResult, err := push.SaveListBody(conf, Param)
 	if err != nil {
 		log.Error(fmt.Sprintf("get push single err : ", err))
 		return saveListBodyResult, err
@@ -80,13 +76,13 @@ func SaveListBody(appId string, auth_token string, parmar *push.SaveListBodyParm
 	return saveListBodyResult, err
 }
 
-func GetSaveListBodyParmar(appKey string) *push.SaveListBodyParmar {
+func GetSaveListBodyParam(appKey string) *push.SaveListBodyParam {
 
-	message := tool.GetMessage()
+	message := entity.GetMessage()
 	message.SetAppKey(appKey)
 	message.SetMsgType("notification")
 
-	notification := tool.GetNotification()
+	notification := entity.GetNotification()
 	notification.SetTransmissionContent("透传内容")
 
 	unWindStyle := style.GetUnwindStyle("检测到可疑人员", "警告通知")
@@ -95,23 +91,23 @@ func GetSaveListBodyParmar(appKey string) *push.SaveListBodyParmar {
 
 	notification.SetNotifyStyle(unWindStyle)
 
-	saveListBodyParmar := &push.SaveListBodyParmar{
+	saveListBodyParam := &push.SaveListBodyParam{
 		Message:      message,
 		Notification: notification,
 		TaskName:     time.Now().Format("20160102150405"),
 	}
-	log.Info("saveListBodyParmar", log.Ctx{
-		"saveListBodyParmar": saveListBodyParmar,
+	log.Info("saveListBodyParam", log.Ctx{
+		"saveListBodyParam": saveListBodyParam,
 	})
-	return saveListBodyParmar
+	return saveListBodyParam
 }
 
-func getPushResult(auth_token string, taskId string) (*query.PushRESResult, error) {
-	pushRESParmar := &query.PushRESParmar{
+func getPushResult(conf entity.IAppConfig, taskId string) (*query.PushRESResult, error) {
+	pushRESParam := &query.PushRESParam{
 		TaskIdList: []string{taskId},
 	}
 
-	PushRESResult, err := query.PushResult(appId, auth_token, pushRESParmar)
+	PushRESResult, err := query.PushResult(conf, pushRESParam)
 	if err != nil {
 		log.Error(fmt.Sprintf("query push result err : ", err))
 		return PushRESResult, err
@@ -120,13 +116,13 @@ func getPushResult(auth_token string, taskId string) (*query.PushRESResult, erro
 }
 
 //单推
-func pushSingle(auth_token string) (*push.PushSingleResult, error) {
+func pushSingle(conf entity.IAppConfig) (*push.PushSingleResult, error) {
 
-	message := tool.GetMessage()
+	message := entity.GetMessage()
 	message.SetAppKey(appKey)
 	message.SetMsgType("notification")
 
-	notification := tool.GetNotification()
+	notification := entity.GetNotification()
 	notification.SetTransmissionContent("透传内容")
 
 	unWindStyle := style.GetUnwindStyle("检测到可疑人员", "警告通知")
@@ -135,17 +131,17 @@ func pushSingle(auth_token string) (*push.PushSingleResult, error) {
 
 	notification.SetNotifyStyle(unWindStyle)
 
-	pushSingleParmar := &push.PushSingleParmar{
+	pushSingleParam := &push.PushSingleParam{
 		Message:      message,
 		Notification: notification,
 		Cid:          cid,
 		RequestId:    time.Now().Format("20160102150405"),
 	}
-	log.Info("pushSingleParmar", log.Ctx{
-		"pushSingleParmar": pushSingleParmar,
+	log.Info("pushSingleParam", log.Ctx{
+		"pushSingleParam": pushSingleParam,
 	})
 
-	pushSingleResult, err := push.PushSingle(appId, auth_token, pushSingleParmar)
+	pushSingleResult, err := push.PushSingle(conf, pushSingleParam)
 	if err != nil {
 		log.Error(fmt.Sprintf("get push single err : ", err))
 		return pushSingleResult, err

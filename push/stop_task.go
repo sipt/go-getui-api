@@ -1,8 +1,8 @@
 package push
 
 import (
-	util "GetuiDemo/getui/util"
-	"encoding/json"
+	"github.com/sipt/go-getui-api/util"
+	"github.com/sipt/go-getui-api/entity"
 )
 
 type StopTaskResult struct {
@@ -10,19 +10,12 @@ type StopTaskResult struct {
 	TaskId string `json:"taskid"` //	任务标识号
 }
 
-func StopTask(appId string, auth_token string, taskid string) (*StopTaskResult, error) {
+func StopTask(conf entity.IAppConfig, taskid string) (*StopTaskResult, error) {
 
-	url := util.TOKEN_DOMAIN + appId + "/stop_task/" + taskid
+	url := util.TOKEN_DOMAIN + conf.GetAppID() + "/stop_task/" + taskid
 
-	result, err := util.Delete(url, auth_token, nil)
-	if err != nil {
-		return nil, err
-	}
+	reply := new(StopTaskResult)
+	err := util.Delete(url, conf.GetToken(), nil, reply)
 
-	stopTaskResult := new(StopTaskResult)
-	if err := json.Unmarshal([]byte(result), &stopTaskResult); err != nil {
-		return nil, err
-	}
-
-	return stopTaskResult, err
+	return reply, err
 }
