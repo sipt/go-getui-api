@@ -7,14 +7,15 @@ import (
 
 //消息应用模板 notification、link、notypopload、transmission 四种类型选其一该属性与message下面的msgtype一致
 type PushSingleParam struct {
-	Message      *entity.Message      `json:"message"`
-	Notification *entity.Notification `json:"notification,omitempty"`
-	Link         *entity.Link         `json:"link,omitempty"`
-	Notypopload  *entity.NotyPopload  `json:"notypopload,omitempty"`
-	Transmission *entity.Transmission `json:"transmission,omitempty"`
-	Cid          string               `json:"cid,omitempty"`
-	Alias        string               `json:"alias,omitempty"`
-	RequestId    string               `json:"requestid"`
+	Message      *entity.Message        `json:"message"`
+	Notification *entity.Notification   `json:"notification,omitempty"`
+	Link         *entity.Link           `json:"link,omitempty"`
+	Notypopload  *entity.NotyPopload    `json:"notypopload,omitempty"`
+	Transmission *entity.Transmission   `json:"transmission,omitempty"`
+	Cid          string                 `json:"cid,omitempty"`
+	Alias        string                 `json:"alias,omitempty"`
+	RequestId    string                 `json:"requestid"`
+	PushInfo     map[string]interface{} `json:"push_info,omitempty"` //APNs消息内容  可选
 }
 
 type PushSingleResult struct {

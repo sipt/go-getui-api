@@ -18,14 +18,15 @@ type PushSingleBatchListParam struct {
 
 //消息应用模板 notification、link、notypopload、transmission 四种类型选其一该属性与message下面的msgtype一致
 type PushSingleBatchParam struct {
-	Message      *entity.Message      `json:"message"` //消息内容
-	Notification *entity.Notification `json:"notification,omitempty"`
-	Link         *entity.Link         `json:"link,omitempty"`
-	Notypopload  *entity.NotyPopload  `json:"notypopload,omitempty"`
-	Transmission *entity.Transmission `json:"transmission,omitempty"`
-	Cid          string               `json:"cid"`   //cid为cid list，与alias list二选一
-	Alias        string               `json:"alias"` //	alias为alias list，与cid list二选一
-	RequestId    string               `json:"requestid"`
+	Message      *entity.Message        `json:"message"` //消息内容
+	Notification *entity.Notification   `json:"notification,omitempty"`
+	Link         *entity.Link           `json:"link,omitempty"`
+	Notypopload  *entity.NotyPopload    `json:"notypopload,omitempty"`
+	Transmission *entity.Transmission   `json:"transmission,omitempty"`
+	Cid          string                 `json:"cid"`   //cid为cid list，与alias list二选一
+	Alias        string                 `json:"alias"` //	alias为alias list，与cid list二选一
+	RequestId    string                 `json:"requestid"`
+	PushInfo     map[string]interface{} `json:"push_info,omitempty"` //APNs消息内容  可选
 }
 
 func PushSingleBatch(conf entity.IAppConfig, param *PushSingleBatchListParam) (*PushSingleBatchResult, error) {
